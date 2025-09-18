@@ -27,12 +27,4 @@ public class BasePage {
         findElement(locator).click();
     }
 
-    public void takeScreenshot(String name) {
-        File screenshotFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-        try {
-            FileUtils.copyFile(screenshotFile, new File("screenshot/" + name + ".png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
