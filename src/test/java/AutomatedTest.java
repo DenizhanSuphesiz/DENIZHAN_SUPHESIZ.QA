@@ -7,12 +7,14 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AutomatedTest {
@@ -42,12 +44,31 @@ public class AutomatedTest {
         }
     }
 
+    // take screenshot on failure
     @AfterEach
-    public void captureScreenshotOnFailure(org.junit.jupiter.api.TestInfo testInfo) {
-        if (testInfo.getTags().contains("failed")) {
-            homePage.takeScreenshot(testInfo.getDisplayName().replaceAll("\\s+", "_"));
-            careersPage.takeScreenshot(testInfo.getDisplayName().replaceAll("\\s+", "_"));
-            qaJobsPage.takeScreenshot(testInfo.getDisplayName().replaceAll("\\s+", "_"));
+    public void captureScreenshotOnFailure(TestInfo testInfo) {
+        try {
+            if (testInfo.getDisplayName() != null) {
+                takeScreenshot(testInfo.getDisplayName().replaceAll("\\s+", "_"));
+            }
+        } catch (Exception e) {
+            System.err.println("Error taking screenshot: " + e.getMessage());
+        }
+    }
+
+    // take screenshot method
+    private void takeScreenshot(String testName) {
+        try {
+            TakesScreenshot screenshot = (TakesScreenshot) driver;
+            File sourceFile = screenshot.getScreenshotAs(OutputType.FILE);
+
+            String fileName = testName + ".png";
+            File destFile = new File("screenshots/" + fileName);
+
+            FileUtils.copyFile(sourceFile, destFile);
+            System.out.println("Screenshot saved: " + destFile.getAbsolutePath());
+        } catch (Exception e) {
+            System.err.println("Failed to take screenshot: " + e.getMessage());
         }
     }
 
@@ -87,9 +108,9 @@ public class AutomatedTest {
 
         qaJobsPage.scroll();
 
-        // Ne yaptiysam su dropdown menuyu bir turlu gorunur hale getiremedim,
-        // her seyi denedim yine de olmadi.
-        // Department menusu duzgun calisirken bunun calismamasi cok ilginc.
+        // Dropdown menuyu bir turlu gorunur hale getiremedim,
+        // Bircok kaynaga baktim ama soruna bir cozum bulamadim.
+        // Department menusu duzgun calisirken bunun calismamasi cok ilginc??
         qaJobsPage.clickLocationSelectionDropdownMenu();
         qaJobsPage.filterByLocation();
 
@@ -123,9 +144,9 @@ public class AutomatedTest {
 
         qaJobsPage.scroll();
 
-        // Ne yaptiysam su dropdown menuyu bir turlu gorunur hale getiremedim,
-        // her seyi denedim yine de olmadi.
-        // Department menusu duzgun calisirken bunun calismamasi cok ilginc.
+        // Dropdown menuyu bir turlu gorunur hale getiremedim,
+        // Bircok kaynaga baktim ama soruna bir cozum bulamadim.
+        // Department menusu duzgun calisirken bunun calismamasi cok ilginc??
         qaJobsPage.clickLocationSelectionDropdownMenu();
         qaJobsPage.filterByLocation();
 
@@ -135,8 +156,8 @@ public class AutomatedTest {
         WebElement viewRoleButton = qaJobsPage.getViewRoleButton();
         viewRoleButton.click();
 
-        // check that this action redirects us to the Lever
-        // Application form page
+        // check that this action redirects us to the
+        // Lever Application form page
         Assertions.assertTrue(driver.getCurrentUrl().contains("lever.co"), "Not redirected to Lever application page.");
     }
 }

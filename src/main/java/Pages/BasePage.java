@@ -30,7 +30,7 @@ public class BasePage {
     public void takeScreenshot(String name) {
         File screenshotFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
         try {
-            FileUtils.copyFile(screenshotFile, new File("screenshots/" + name + ".png"));
+            FileUtils.copyFile(screenshotFile, new File("screenshot/" + name + ".png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
